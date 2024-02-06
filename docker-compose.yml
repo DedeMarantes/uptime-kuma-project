@@ -1,0 +1,38 @@
+services:
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - kuma-network
+  prometheus:
+    depends_on:
+      - kuma
+    container_name: prometheus
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - kuma-network
+  kuma:
+    container_name: kuma
+    image:  louislam/uptime-kuma
+    volumes:
+      - data:/app/data
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    networks:
+      - kuma-network
+volumes:
+  data:
+  grafana_data:
+networks:
+  kuma-network:
+    driver: bridge
+
